@@ -4,14 +4,13 @@ import type { NextRequest } from "next/server"
 import type { ServerToClientEvents, ClientToServerEvents, GameSession, Player } from "@/lib/types"
 import { getQuiz } from "@/lib/quiz-storage"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+
 // Store active game sessions in memory
 const gameSessions = new Map<string, GameSession>()
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// App Router route segment config replaces pages `export const config`
 
 let io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> | null = null
 
