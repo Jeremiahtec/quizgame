@@ -19,6 +19,7 @@ export function GameLobby() {
   const [quizTitle, setQuizTitle] = useState("")
   const [players, setPlayers] = useState<Player[]>([])
   const [copied, setCopied] = useState(false)
+  const [starting, setStarting] = useState(false)
 
   useEffect(() => {
     const quizData = localStorage.getItem("currentQuiz")
@@ -65,6 +66,7 @@ export function GameLobby() {
       return
     }
     const socket = getSocket()
+    setStarting(true)
     socket.emit("startGame", gamePin)
     router.push("/play")
   }
@@ -121,10 +123,11 @@ export function GameLobby() {
             <Button
               onClick={startGame}
               size="lg"
-              className="gap-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105 gradient-purple-blue"
+              disabled={starting}
+              className="gap-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105 gradient-purple-blue disabled:opacity-60"
             >
               <Play className="h-5 w-5" />
-              Start
+              {starting ? "Starting..." : "Start"}
             </Button>
           </div>
 

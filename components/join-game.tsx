@@ -32,16 +32,27 @@ export function JoinGame() {
       return
     }
     const socket = getSocket()
-    socket.emit("joinGame", gamePin, playerName.trim(), (success: boolean, err?: string) => {
-      if (!success) {
-        setError(err || "Failed to join game")
-        return
-      }
-      const player = { id: socket.id, name: playerName.trim(), joinedAt: Date.now() }
-      localStorage.setItem("currentPlayer", JSON.stringify(player))
-      localStorage.setItem("gamePin", gamePin)
-    router.push("/waiting")
-    })
+    const doJoin = () => {
+      socket.emit("joinGame", gamePin, playerName.trim(), (success: boolean, err?: string) => {
+        if (!success) {
+          setError(err || "Failed to join game")
+          return
+        }
+        const player = { id: socket.id, name: playerName.trim(), joinedAt: Date.now() }
+        localStorage.setItem("currentPlayer", JSON.stringify(player))
+        localStorage.setItem("gamePin", gamePin)
+        router.push("/waiting")
+      })
+    }
+    if (socket.connected) {
+      doJoin()
+    } else {
+      const timeout = setTimeout(() => setError("Connection timeout. Please try again."), 5000)
+      socket.once("connect", () => {
+        clearTimeout(timeout)
+        doJoin()
+      })
+    }
   }
 
   return (

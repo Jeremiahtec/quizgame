@@ -7,6 +7,10 @@ export function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> 
   if (!socket) {
     socket = io({
       path: "/api/socket",
+      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 500,
     })
   }
   return socket

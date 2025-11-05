@@ -10,6 +10,7 @@ export function WaitingRoom() {
   const router = useRouter()
   const [playerName, setPlayerName] = useState("")
   const [playerCount, setPlayerCount] = useState(0)
+  const [started, setStarted] = useState(false)
 
   useEffect(() => {
     const playerData = localStorage.getItem("currentPlayer")
@@ -29,7 +30,10 @@ export function WaitingRoom() {
     const socket = getSocket()
     const onPlayerJoined = () => setPlayerCount((c) => c + 1)
     const onPlayerLeft = () => setPlayerCount((c) => Math.max(0, c - 1))
-    const onGameStarted = () => router.push("/play")
+    const onGameStarted = () => {
+      setStarted(true)
+      setTimeout(() => router.push("/play"), 1200)
+    }
 
     socket.on("playerJoined", onPlayerJoined)
     socket.on("playerLeft", onPlayerLeft)
@@ -52,11 +56,15 @@ export function WaitingRoom() {
 
           <div>
             <h1 className="text-3xl font-bold mb-2">Welcome, {playerName}!</h1>
-            <p className="text-muted-foreground">You're in! Waiting for the host to start the game...</p>
+            {started ? (
+              <p className="text-accent font-semibold animate-pulse">Game starting...</p>
+            ) : (
+              <p className="text-muted-foreground">You're in! Waiting for the host to start the game...</p>
+            )}
           </div>
 
           <div className="flex items-center gap-3 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className={`h-5 w-5 ${started ? "animate-none text-accent" : "animate-spin"}`} />
             <span>
               {playerCount} {playerCount === 1 ? "player" : "players"} in lobby
             </span>
