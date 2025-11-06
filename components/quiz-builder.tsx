@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Plus, Trash2, Play, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 type Answer = {
   id: string
@@ -30,6 +31,7 @@ const ANSWER_COLORS = [
 
 export function QuizBuilder() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [quizTitle, setQuizTitle] = useState("")
   const [questions, setQuestions] = useState<Question[]>([
     {
@@ -95,6 +97,10 @@ export function QuizBuilder() {
   }
 
   const startGame = () => {
+    if (!session) {
+      router.push("/login")
+      return
+    }
     if (!quizTitle.trim()) {
       alert("Please add a quiz title")
       return
